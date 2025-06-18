@@ -4,12 +4,12 @@ public class CompareStrings{
     Scanner sc=new Scanner(System.in);
     String s1=sc.next();
     String s2=sc.next();
-    if(check(s1,s2)==s1.equals(s2)){
-      System.out.print(true);
-    } 
-    else{
-      System.out.print(false);
-    }
+    boolean result1 = check(s1, s2);
+    boolean result2 = s1.equals(s2);
+    System.out.println("Custom check result: " + result1);
+    System.out.println("Built-in equals result: " + result2);
+    System.out.println("Both results are same: " + (result1 == result2));
+
   }
   public static boolean check(String s1,String s2){
     if(s1.length()!=s2.length()) return false;
