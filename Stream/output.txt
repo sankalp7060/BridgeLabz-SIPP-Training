@@ -1,0 +1,3 @@
+Hello Tanya!
+This is a file copy test.
+Java file handling is working correctly.
