@@ -1,0 +1,18 @@
+Class Item
+    Attributes: name, price
+    Constructor(name, price)
+
+Class Cart
+    Attribute: List<Item> items
+    Method addItem(item)
+        add item to items
+    Generic Method calculateTotal(List<T extends Item>)
+        sum = 0
+        for each item in list
+            sum += item.price
+        return sum
+
+Main
+    create Cart object
+    add items to cart
+    print calculateTotal(cart.items)

@@ -1,0 +1,12 @@
+Class Employee
+    Attributes: name, department, salary
+    Constructor(name, department, salary)
+
+Main
+    Define ArrayList<Employee> employees
+    Add employees into list
+
+    Filter by department "IT" using stream:
+        employees.stream()
+                 .filter(emp -> emp.department == "IT")
+                 .forEach(print employee details)

@@ -1,0 +1,13 @@
+Class Book
+    Attributes: title, year, rating
+    Constructor(title, year, rating)
+
+Main
+    Define List<Book> books
+    add books with year and rating
+
+    Use stream filter:
+        books.stream()
+             .filter(book.year > 2015)
+             .filter(book.rating > 4.5)
+             .forEach(print book.title)
