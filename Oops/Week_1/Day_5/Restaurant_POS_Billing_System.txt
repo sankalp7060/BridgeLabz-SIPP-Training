@@ -1,0 +1,124 @@
+class Item {
+    String name
+    double price
+    List<String> tags
+    Item(String n, double p, List<String> t) { name=n; price=p; tags=t }
+}
+
+interface TaxCalculator {
+    double calculate(Item item)
+}
+
+class FoodTax implements TaxCalculator {
+    double calculate(Item item) { return item.price * 0.05 }
+}
+
+class BeverageTax implements TaxCalculator {
+    double calculate(Item item) { return item.price * 0.12 }
+}
+
+class ImportedTax implements TaxCalculator {
+    double customDutyRate
+    ImportedTax(double rate) { customDutyRate = rate }
+    double calculate(Item item) { return item.price * customDutyRate }
+}
+
+class LuxuryTax implements TaxCalculator {
+    double rate
+    LuxuryTax(double r) { rate = r }
+    double calculate(Item item) { return item.price * rate }
+}
+
+interface DiscountPolicy {
+    double apply(double subtotal, List<Item> items)
+}
+
+class NoDiscount implements DiscountPolicy {
+    double apply(double subtotal, List<Item> items) { return subtotal }
+}
+
+class FlatDiscount implements DiscountPolicy {
+    double amount
+    FlatDiscount(double amt) { amount = amt }
+    double apply(double subtotal, List<Item> items) { return Math.max(0, subtotal - amount) }
+}
+
+class PercentageDiscount implements DiscountPolicy {
+    double pct
+    PercentageDiscount(double p) { pct = p }
+    double apply(double subtotal, List<Item> items) { return subtotal * (1 - pct/100) }
+}
+
+class BuyOneGetOneDiscount implements DiscountPolicy {
+    String tag
+    BuyOneGetOneDiscount(String tag) { this.tag = tag }
+    double apply(double subtotal, List<Item> items) {
+        Map<String, Integer> counts = new HashMap<>()
+        double discount = 0
+        for Item it : items {
+            if it.tags.contains(tag) {
+                counts.put(it.name, counts.getOrDefault(it.name,0)+1)
+            }
+        }
+        for entry in counts.entrySet() {
+            int qty = entry.value
+            int free = qty / 2
+            double unitPrice = items.stream().filter(i->i.name==entry.key).findFirst().price
+            discount += free * unitPrice
+        }
+        return Math.max(0, subtotal - discount)
+    }
+}
+
+class TaxRegistry {
+    List<TaxCalculator> taxes = new ArrayList<>()
+    void register(TaxCalculator t) { taxes.add(t) }
+    double totalTaxFor(Item item) {
+        double sum = 0
+        for TaxCalculator t : taxes { sum += t.calculate(item) }
+        return sum
+    }
+}
+
+class BillingEngine {
+    TaxRegistry taxRegistry
+    DiscountPolicy discountPolicy
+    BillingEngine(TaxRegistry tr, DiscountPolicy dp) { taxRegistry = tr; discountPolicy = dp }
+    double computeTotal(List<Item> items) {
+        double subtotal = 0
+        for Item it : items { subtotal += it.price }
+        double taxTotal = 0
+        for Item it : items { taxTotal += taxRegistry.totalTaxFor(it) }
+        double preDiscount = subtotal + taxTotal
+        double finalAmount = discountPolicy.apply(preDiscount, items)
+        return finalAmount
+    }
+}
+
+function example1() {
+    Item paneer = new Item("Paneer Tikka", 500, ["food"])
+    Item coke = new Item("Coke", 120, ["beverage"])
+    Item impCheese = new Item("Imported Cheese", 1000, ["food","imported"])
+
+    TaxRegistry registry = new TaxRegistry()
+    registry.register(new FoodTax())
+    registry.register(new BeverageTax())
+    registry.register(new ImportedTax(0.10))
+
+    DiscountPolicy tenPercent = new PercentageDiscount(10)
+
+    BillingEngine engine = new BillingEngine(registry, tenPercent)
+    double total = engine.computeTotal([paneer, coke, impCheese])
+}
+
+function example2_addNewScheme() {
+    Item premium = new Item("Premium Steak", 2500, ["food","luxury"])
+    TaxRegistry registry = new TaxRegistry()
+    registry.register(new FoodTax())
+    registry.register(new LuxuryTax(0.08))
+
+    DiscountPolicy bogo = new BuyOneGetOneDiscount("beverage")
+    BillingEngine engine = new BillingEngine(registry, bogo)
+
+    double total = engine.computeTotal([premium, new Item("Coke",120,["beverage"]), new Item("Coke",120,["beverage"])])
+}

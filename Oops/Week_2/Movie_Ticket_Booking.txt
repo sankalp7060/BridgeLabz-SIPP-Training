@@ -1,0 +1,39 @@
+class Ticket {
+    String movie
+    String seat
+    double price
+    boolean booked
+}
+
+class Theatre {
+    String name
+    Map<String, Ticket> seats
+    Ticket issueTicket(String movie, String seat) {
+        if(seats.get(seat).booked==false) {
+            Ticket t = seats.get(seat)
+            t.booked=true
+            return t
+        }
+        return null
+    }
+    void cancelTicket(Ticket t) {
+        t.booked=false
+    }
+}
+
+class Customer {
+    String name
+    Ticket book(Theatre th, String movie, String seat) {
+        return th.issueTicket(movie, seat)
+    }
+    void cancel(Theatre th, Ticket t) {
+        th.cancelTicket(t)
+    }
+}
+
+function main() {
+    Theatre t = new Theatre("PVR")
+    Customer c = new Customer("Ravi")
+    Ticket tk = c.book(t, "Avengers", "A12")
+    c.cancel(t, tk)
+}

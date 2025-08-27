@@ -1,0 +1,74 @@
+interface DiagnosisStrategy {
+    List<String> diagnose(List<String> symptoms);
+}
+
+class RuleBasedDiagnosis implements DiagnosisStrategy {
+    List<String> diagnose(List<String> symptoms) {
+        RuleEngine engine = new RuleEngine()
+        if engine.matches(symptoms, ["fever","cough"]) return ["Flu","COVID-19"]
+        return engine.suggest(symptoms)
+    }
+}
+
+class AIBasedDiagnosis implements DiagnosisStrategy {
+    Model aiModel
+    AIBasedDiagnosis(Model model) { this.aiModel = model }
+    List<String> diagnose(List<String> symptoms) {
+        return aiModel.predict(symptoms)
+    }
+}
+
+class ProbabilityBasedDiagnosis implements DiagnosisStrategy {
+    ProbabilityModel pModel
+    ProbabilityBasedDiagnosis(ProbabilityModel m) { this.pModel = m }
+    List<String> diagnose(List<String> symptoms) {
+        return pModel.topK(symptoms, 3)
+    }
+}
+
+class GeneticPatternDiagnosis implements DiagnosisStrategy {
+    GeneticModel gModel
+    GeneticPatternDiagnosis(GeneticModel m) { this.gModel = m }
+    List<String> diagnose(List<String> symptoms) {
+        return gModel.infer(symptoms)
+    }
+}
+
+class DiagnosisContext {
+    DiagnosisStrategy strategy
+    DiagnosisContext(DiagnosisStrategy s) { this.strategy = s }
+    void setStrategy(DiagnosisStrategy s) { this.strategy = s }
+    List<String> diagnosePatient(List<String> symptoms) {
+        return strategy.diagnose(symptoms)
+    }
+}
+
+class DepartmentStrategySelector {
+    Map<String, DiagnosisStrategy> map
+    DepartmentStrategySelector() {
+        map = new HashMap<>()
+        map.put("GeneralMedicine", new RuleBasedDiagnosis())
+        map.put("Neurology", new AIBasedDiagnosis(loadNeurologyModel()))
+        map.put("ENT", new ProbabilityBasedDiagnosis(loadProbModel()))
+    }
+    DiagnosisStrategy get(String department) {
+        return map.getOrDefault(department, new RuleBasedDiagnosis())
+    }
+    void register(String department, DiagnosisStrategy strategy) {
+        map.put(department, strategy)
+    }
+}
+
+function main() {
+    DepartmentStrategySelector selector = new DepartmentStrategySelector()
+
+    DiagnosisContext ctx1 = new DiagnosisContext(selector.get("GeneralMedicine"))
+    List<String> r1 = ctx1.diagnosePatient(["fever","cough","fatigue"])
+
+    DiagnosisContext ctx2 = new DiagnosisContext(selector.get("Neurology"))
+    List<String> r2 = ctx2.diagnosePatient(["headache","dizziness","nausea"])
+
+    selector.register("Genetics", new GeneticPatternDiagnosis(loadGeneticModel()))
+    DiagnosisContext ctx3 = new DiagnosisContext(selector.get("Genetics"))
+    List<String> r3 = ctx3.diagnosePatient(["rare_marker","fatigue"])
+}

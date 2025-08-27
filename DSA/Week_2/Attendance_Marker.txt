@@ -1,0 +1,26 @@
+class Attendance {
+    char[][] record
+    Attendance(int students, int days) {
+        record=new char[students][days]
+    }
+    void mark(int student, int day, char status) {
+        record[student][day]=status
+    }
+    void update(int student, int day, char status) {
+        record[student][day]=status
+    }
+    int report(int student) {
+        int count=0
+        for d in record[student] if(d=='P') count++
+        return count
+    }
+}
+
+function main() {
+    Attendance a = new Attendance(5,30)
+    a.mark(0,0,'P')
+    a.mark(0,1,'P')
+    a.mark(0,2,'A')
+    a.update(0,2,'P')
+    int total=a.report(0)
+}

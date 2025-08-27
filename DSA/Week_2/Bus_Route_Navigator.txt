@@ -1,0 +1,53 @@
+class Node {
+    String stop
+    Node next
+    Node(String s) { stop=s }
+}
+
+class BusRoute {
+    Node head
+    void insertAfter(String afterStop, String newStop) {
+        Node curr=head
+        while(curr!=null) {
+            if(curr.stop==afterStop) {
+                Node n = new Node(newStop)
+                n.next=curr.next
+                curr.next=n
+                return
+            }
+            curr=curr.next
+        }
+    }
+    void deleteStop(String stop) {
+        if(head.stop==stop) { head=head.next; return }
+        Node curr=head
+        while(curr.next!=null) {
+            if(curr.next.stop==stop) {
+                curr.next=curr.next.next
+                return
+            }
+            curr=curr.next
+        }
+    }
+    boolean search(String stop) {
+        Node curr=head
+        while(curr!=null) {
+            if(curr.stop==stop) return true
+            curr=curr.next
+        }
+        return false
+    }
+}
+
+function main() {
+    BusRoute r = new BusRoute()
+    r.head=new Node("Depot")
+    r.head.next=new Node("Main Street")
+    r.head.next.next=new Node("City Mall")
+    r.head.next.next.next=new Node("Hospital")
+    r.head.next.next.next.next=new Node("Airport")
+
+    r.insertAfter("City Mall","University")
+    r.deleteStop("Hospital")
+    bool f = r.search("Airport")
+}

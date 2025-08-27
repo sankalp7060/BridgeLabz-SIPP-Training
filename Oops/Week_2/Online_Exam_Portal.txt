@@ -1,0 +1,29 @@
+class User {
+    String username
+    String password
+    boolean login(String u, String p) { return u==username && p==password }
+}
+
+class Student extends User {
+    boolean enrolled
+    boolean login(String u, String p) {
+        if(super.login(u,p) && enrolled) return true
+        return false
+    }
+}
+
+class Admin extends User {
+    boolean isAdmin
+    boolean login(String u, String p) {
+        if(super.login(u,p) && isAdmin) return true
+        return false
+    }
+}
+
+function main() {
+    Student s = new Student("john123","pass",true)
+    if(s.login("john123","pass")) showExams()
+
+    Admin a = new Admin("admin01","adminPass",true)
+    if(a.login("admin01","adminPass")) showManagementTools()
+}
