@@ -1,0 +1,23 @@
+class TaskManager {
+    LinkedHashMap<Integer,String> tasks
+    int id=1
+    void addTask(String desc) {
+        tasks.put(id,desc)
+        id++
+    }
+    void removeTask(int tid) {
+        tasks.remove(tid)
+    }
+    void showTasks() {
+        for entry in tasks.entrySet() print(entry.key+" → "+entry.value)
+    }
+}
+
+function main() {
+    TaskManager tm=new TaskManager()
+    tm.addTask("Check emails")
+    tm.addTask("Prepare sales report")
+    tm.addTask("Call client")
+    tm.removeTask(2)
+    tm.showTasks()
+}
